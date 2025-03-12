@@ -261,7 +261,6 @@ def gen_test3(p, balanced, out_path, out_form, tmp_dir, a = None, b = None, G = 
                     break
         
         G = '03' + long_to_bytes(Gx).hex()
-        print(G)
 
     set_ecdsa_public_key_explicitly(
                                     spki, type = "fp", 

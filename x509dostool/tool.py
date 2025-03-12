@@ -28,12 +28,12 @@ def main():
     edit = subparser.add_parser('edit', help = "customized edit of certificates")
     detect = subparser.add_parser('detect', help = "detection of implementations in libraries")
 
-    # 
-    generate_subparser = generate.add_subparsers(dest = 'generate_command')
-
     generate_out_group = generate.add_argument_group(title = "output settings")
     generate_out_group.add_argument('-out', type = str, help = f'specify an output path (default = {DEFAULT_CERT_NAME})', metavar = "", required = False, default = DEFAULT_CERT_NAME)
     generate_out_group.add_argument('-outform', type = str, choices = ['der', 'pem'], help = 'specify a encoding format: {pem, der}, default = pem', metavar = "", required = False, default = "pem")
+
+    # 
+    generate_subparser = generate.add_subparsers(dest = 'generate_command')
 
     # ================================ BEGIN test0 ================================
     generate_test0 = generate_subparser.add_parser("test0", help = "a normal certificate")
