@@ -31,19 +31,19 @@ Our testing environment is built on a Linux server equipped with 4GB of RAM and 
 The software dependencies required to run this tool primarily include the following:
 
 - Python v3.10.12
-- pip v25.0.1
+- pip v22.0.2
 - setuptools v75.8.0 (Python package)
 - psutil v6.0.0 (Python package)
 - pyasn1 v0.6.0 (Python package)
 - pyasn1_modules v0.4.0 (Python package)
 - pycryptodome v3.20.0 (Python package)
-- OpenSSL v3.0.0
+- OpenSSL v3.0.2
 
 The versions used during testing should match or closely align with those mentioned above, as significant version discrepancies may introduce potential untested issues.
 
 Additionally, before evaluators attempt to use the tool to detect issues in a specific library, the corresponding version of the library (as listed in Table 3 and Table 4 of our paper) needs to be installed first. The libraries and their version information involved include:
 
-- OpenSSL v1.0.2
+- OpenSSL v3.0.0, v1.0.2
 - Botan v1.11.21, v1.11.26, v3.2.0, v3.4.0
 - Bouncy Castle v1.70, v1.77
 - Crypto++ v5.6.4, v8.9
