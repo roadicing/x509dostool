@@ -1,5 +1,5 @@
 {
-    "DEBUG_FLAG": false, 
+    "DEBUG_FLAG": true, 
     "DEFAULT_TMP_DIR": "/tmp/x509dostool/", 
     "TMP_DIR_RANDOM_FLAG": false,
     "DEFAULT_CERT_NAME": "crafted_certificate.crt", 

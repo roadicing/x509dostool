@@ -18,7 +18,7 @@ fi
 if ! command -v botan &>/dev/null; then
     echo "botan is not installed." >&2
 else
-    botan_version=$(botan --version)
+    botan_version=$(botan version)
     echo "found botan installed: $botan_version"
     installed_libraries+=("botan")
 fi

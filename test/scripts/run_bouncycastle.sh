@@ -32,7 +32,7 @@ CERT_FILE=$(realpath "$1")
 
 # ensure the provided certificate is in PEM format
 if ! grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || ! grep -q "END CERTIFICATE" "$CERT_FILE"; then
-    echo "error: the provided certificate is not in PEM format." >&2
+    echo "error: the provided file is not a certificate in PEM format." >&2
     exit 1
 fi
 

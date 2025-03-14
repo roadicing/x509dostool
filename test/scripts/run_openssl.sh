@@ -14,9 +14,15 @@ fi
 
 CERT_FILE="$1"
 
+# check if the file is a public key
+if grep -q "BEGIN PUBLIC KEY" "$CERT_FILE" && grep -q "END PUBLIC KEY" "$CERT_FILE"; then
+    openssl pkey -pubin -in "$CERT_FILE" -pubcheck
+    exit 1
+fi
+
 # ensure the provided certificate is in PEM format
 if ! grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || ! grep -q "END CERTIFICATE" "$CERT_FILE"; then
-    echo "error: the provided certificate is not in PEM format." >&2
+    echo "error: the provided file is not a certificate in PEM format." >&2
     exit 1
 fi
 

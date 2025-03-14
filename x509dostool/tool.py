@@ -188,7 +188,8 @@ def main():
     edit_out_group = edit.add_argument_group(title = "output settings")
     edit_out_group.add_argument('-out', type = str, help = f'specify an output path (default = {DEFAULT_EDITED_CERT_NAME})', metavar = "", required = False, default = DEFAULT_EDITED_CERT_NAME)
     edit_out_group.add_argument('-outform', type = str, choices = ['der', 'pem'], help = 'specify a encoding format: {pem, der}, default = pem', metavar = "", required = False, default = "pem")
-    
+    edit_out_group.add_argument('--pubout', action = 'store_true', help = 'export the public key synchronously', required = False)
+
     #
     edit_subparser = edit.add_subparsers(dest = 'edit_command')
     
@@ -261,9 +262,6 @@ def main():
     edit_tbs_spki_rsa.add_argument('-e', type = str, help = 'specify the exponent e', metavar = "", required = False)
     edit_tbs_spki_rsa.add_argument('-n', type = str, help = 'specify the modulus n', metavar = "", required = False)
 
-    edit_tbs_spki_rsa_group = edit_tbs_spki_rsa.add_argument_group(title = "additional features")
-    edit_tbs_spki_rsa_group.add_argument('--pubout', action = 'store_true', help = 'export the public key synchronously', required = False)
-
     # dsa
     edit_tbs_spki_dsa = edit_sub_sub_subparser.add_parser("dsa", help = "edit the dsa public key")
     edit_tbs_spki_dsa.add_argument('-algo', dest = "pub_algo_oid", type = str, help = 'specify the public key algorithm (in dot-decimal notation)', metavar = "", required = False)
@@ -272,9 +270,6 @@ def main():
     edit_tbs_spki_dsa.add_argument('-q', type = str, help = 'specify the parameter q', metavar = "", required = False)
     edit_tbs_spki_dsa.add_argument('-g', type = str, help = 'specify the parameter g', metavar = "", required = False)
     edit_tbs_spki_dsa.add_argument('-pub', type = str, help = 'specify the public key', metavar = "", required = False)
-
-    edit_tbs_spki_dsa_group = edit_tbs_spki_dsa.add_argument_group(title = "additional features")
-    edit_tbs_spki_dsa_group.add_argument('--pubout', action = 'store_true', help = 'export the public key synchronously', required = False)
 
     # ecdsa
     edit_tbs_spki_ecdsa = edit_sub_sub_subparser.add_parser("ecdsa", help = "edit the ecdsa public key")
@@ -285,7 +280,6 @@ def main():
 
     edit_tbs_spki_ecdsa_group = edit_tbs_spki_ecdsa.add_argument_group(title = "additional features")
     edit_tbs_spki_ecdsa_group.add_argument('--compressed', action = 'store_true', help = 'enable point compression', required = False)
-    edit_tbs_spki_ecdsa_group.add_argument('--pubout', action = 'store_true', help = 'export the public key synchronously', required = False)
 
     # ecdsa E_(F_p) (explicit)
     edit_tbs_spki_ecdsa_fp = edit_sub_sub_subparser.add_parser("ecdsa_fp", help = "edit the ecdsa public key (explicit: E_(F_p))")
@@ -303,7 +297,6 @@ def main():
     edit_tbs_spki_ecdsa_fp_group = edit_tbs_spki_ecdsa_fp.add_argument_group(title = "additional features")
     edit_tbs_spki_ecdsa_fp_group.add_argument('--balanced', action = 'store_true', help = 'add leading zero bytes', required = False)
     edit_tbs_spki_ecdsa_fp_group.add_argument('--compressed', action = 'store_true', help = 'enable point compression', required = False)
-    edit_tbs_spki_ecdsa_fp_group.add_argument('--pubout', action = 'store_true', help = 'export the public key synchronously', required = False)
 
     # ecdsa E_(F_(2^m)), trinomial (explicit)
     edit_tbs_spki_ecdsa_f2m_tp = edit_sub_sub_subparser.add_parser("ecdsa_f2m_tp", help = "edit the ecdsa public key (explicit: E_(F_(2^m)), f(x) = x^m + x^t + 1)")
@@ -322,7 +315,6 @@ def main():
     edit_tbs_spki_ecdsa_f2m_tp_group = edit_tbs_spki_ecdsa_f2m_tp.add_argument_group(title = "additional features")
     edit_tbs_spki_ecdsa_f2m_tp_group.add_argument('--balanced', action = 'store_true', help = 'add leading zero bytes', required = False)
     edit_tbs_spki_ecdsa_f2m_tp_group.add_argument('--compressed', action = 'store_true', help = 'enable point compression', required = False)
-    edit_tbs_spki_ecdsa_f2m_tp_group.add_argument('--pubout', action = 'store_true', help = 'export the public key synchronously', required = False)
 
     # ecdsa E_(F_(2^m)), pentanomial (explicit)
     edit_tbs_spki_ecdsa_f2m_pp = edit_sub_sub_subparser.add_parser("ecdsa_f2m_pp", help = "edit the ecdsa public key (explicit: E_(F_(2^m)), f(x) = x^m + x^t3 + x^t2 + x^t1 + 1)")
@@ -343,7 +335,6 @@ def main():
     edit_tbs_spki_ecdsa_f2m_pp_group = edit_tbs_spki_ecdsa_f2m_pp.add_argument_group(title = "additional features")
     edit_tbs_spki_ecdsa_f2m_pp_group.add_argument('--balanced', action = 'store_true', help = 'add leading zero bytes', required = False)
     edit_tbs_spki_ecdsa_f2m_pp_group.add_argument('--compressed', action = 'store_true', help = 'enable point compression', required = False)
-    edit_tbs_spki_ecdsa_f2m_pp_group.add_argument('--pubout', action = 'store_true', help = 'export the public key synchronously', required = False)
     # ================================= END subjectPublicKeyInfo ================================
 
 
@@ -573,38 +564,28 @@ def main():
                         pub_key = [args.e, args.n]
 
                         if all(arg is None for arg in [args.pub_algo_oid] + [parameters] + pub_key):
-
-                            if args.pubout == False: 
-                                print("usage: edit tbs spki rsa [-h] [-algo] [-e] [-n] [--pubout]")
-                                print("edit tbs spki rsa: error: one of the following arguments are required: -algo, -e, -n, --pubout")
-                                sys.exit(1)
+                            print("usage: edit tbs spki rsa [-h] [-algo] [-e] [-n]")
+                            print("edit tbs spki rsa: error: one of the following arguments are required: -algo, -e, -n")
+                            sys.exit(1)
 
                         edit_spki(
                                     cert, "rsa", args.pub_algo_oid, 
                                     parameters, pub_key
                         )
 
-                        if args.pubout:
-                            export_public_key(args.input, None, args.outform)
-
                     elif args.edit_sub_sub_command == "dsa":
                         parameters = [args.p, args.q, args.g]
                         pub_key = args.pub
 
-                        if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
-
-                            if args.pubout == False: 
-                                print("usage: edit tbs spki dsa [-h] [-algo] [-p] [-q] [-g] [-pub] [--pubout]")
-                                print("edit tbs spki dsa: error: one of the following arguments are required: -algo, -p, -q, -g, -pub, --pubout")
-                                sys.exit(1)
+                        if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]): 
+                            print("usage: edit tbs spki dsa [-h] [-algo] [-p] [-q] [-g] [-pub]")
+                            print("edit tbs spki dsa: error: one of the following arguments are required: -algo, -p, -q, -g, -pub")
+                            sys.exit(1)
 
                         edit_spki(
                                     cert, "dsa", args.pub_algo_oid, 
                                     parameters, pub_key
                         )
-
-                        if args.pubout:
-                            export_public_key(args.input, None, args.outform)
 
                     elif args.edit_sub_sub_command == "ecdsa":
                         if args.name is None:
@@ -616,9 +597,9 @@ def main():
 
                         if all(arg is None for arg in [args.pub_algo_oid] + [parameters] + [pub_key]):
 
-                            if not any([args.compressed, args.pubout]):
-                                print("usage: edit tbs spki ecdsa [-h] [-algo] [-name] [-P] [--compressed] [--pubout]")
-                                print("edit tbs spki ecdsa: error: one of the following arguments are required: -algo, -name, -P, --compressed, --pubout")
+                            if not any([args.compressed]):
+                                print("usage: edit tbs spki ecdsa [-h] [-algo] [-name] [-P] [--compressed]")
+                                print("edit tbs spki ecdsa: error: one of the following arguments are required: -algo, -name, -P, --compressed")
                                 sys.exit(1)
 
                         edit_spki(
@@ -626,9 +607,6 @@ def main():
                                     parameters, pub_key, 
                                     compressed = args.compressed
                         )
-
-                        if args.pubout:
-                            export_public_key(args.input, None, args.outform)
 
                     elif args.edit_sub_sub_command == "ecdsa_fp":
                         parameters = [
@@ -638,21 +616,17 @@ def main():
                         ]
                         pub_key = args.P
 
-                        if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
-
-                            if not any([args.balanced, args.compressed, args.pubout]):
-                                print("usage: edit tbs spki ecdsa_fp [-h] [-algo] [-p] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed] [--pubout]")
-                                print("edit tbs spki ecdsa_fp: error: one of the following arguments are required: -algo, -p, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed, --pubout")
-                                sys.exit(1)                        
+                        #if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
+                        #    if not any([args.balanced, args.compressed]):
+                        #        print("usage: edit tbs spki ecdsa_fp [-h] [-algo] [-p] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed]")
+                        #        print("edit tbs spki ecdsa_fp: error: one of the following arguments are required: -algo, -p, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed")
+                        #        sys.exit(1)                        
 
                         edit_spki(
                                     cert, "ecdsa_fp", args.pub_algo_oid, 
                                     parameters, pub_key, 
                                     balanced = args.balanced, compressed = args.compressed
                         )
-
-                        if args.pubout:
-                            export_public_key(args.input, None, args.outform)
 
                     elif args.edit_sub_sub_command == "ecdsa_f2m_tp":
                         parameters = [
@@ -664,9 +638,9 @@ def main():
 
                         if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
 
-                            if not any([args.balanced, args.compressed, args.pubout]): 
-                                print("usage: edit tbs spki ecdsa_f2m_tp [-h] [-algo] [-m] [-t] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed] [--pubout]")
-                                print("edit tbs spki ecdsa_f2m_tp: error: one of the following arguments are required: -algo, -m, -t, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed, --pubout")
+                            if not any([args.balanced, args.compressed]): 
+                                print("usage: edit tbs spki ecdsa_f2m_tp [-h] [-algo] [-m] [-t] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed]")
+                                print("edit tbs spki ecdsa_f2m_tp: error: one of the following arguments are required: -algo, -m, -t, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed")
                                 sys.exit(1)  
 
                         edit_spki(
@@ -674,9 +648,6 @@ def main():
                                     parameters, pub_key, 
                                     balanced = args.balanced, compressed = args.compressed
                         )
-
-                        if args.pubout:
-                            export_public_key(args.input, None, args.outform)
 
                     elif args.edit_sub_sub_command == "ecdsa_f2m_pp":
                         parameters = [
@@ -688,9 +659,9 @@ def main():
 
                         if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
 
-                            if not any([args.balanced, args.compressed, args.pubout]):
-                                print("usage: edit tbs spki ecdsa_f2m_pp [-h] [-algo] [-m] [-t3] [-t2] [-t1] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed] [--pubout]")
-                                print("edit tbs spki ecdsa_f2m_pp: error: one of the following arguments are required: -algo, -m, -t3, -t2, -t1, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed, --pubout")
+                            if not any([args.balanced, args.compressed]):
+                                print("usage: edit tbs spki ecdsa_f2m_pp [-h] [-algo] [-m] [-t3] [-t2] [-t1] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed]")
+                                print("edit tbs spki ecdsa_f2m_pp: error: one of the following arguments are required: -algo, -m, -t3, -t2, -t1, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed")
                                 sys.exit(1) 
 
                         edit_spki(
@@ -698,9 +669,6 @@ def main():
                                     parameters, pub_key, 
                                     balanced = args.balanced, compressed = args.compressed
                         )
-
-                        if args.pubout:
-                            export_public_key(args.input, None, args.outform)
 
             elif args.edit_command == 'sig_algo':
                 if args.sig_algo_oid is not None:
@@ -710,13 +678,17 @@ def main():
                 if args.sig is not None:
                     edit_signature_value(cert, args.sig)
 
-            write_cert(cert, args.out, args.outform)
+            write_cert(cert, args.out, pem = (args.outform == 'pem'))
         
         prompt(f"certificate edited successfully, named [{args.out}].")
+
+        if args.pubout:
+            export_public_key(args.out, None, args.outform)
 
     elif args.command == "detect":
         lib_path = args.libs
         cert_path = args.certs
+
         handle_detects(lib_path, cert_path, CPU_ROUNDS, MEM_ROUNDS, CPU_USAGE_AVG_THRESHOLD, MEM_USAGE_AVG_THRESHOLD)
 
     prompt("finished")
