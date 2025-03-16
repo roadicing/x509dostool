@@ -270,7 +270,7 @@ def run_cmd(cmd, capture_output = True, text = True, env = None, check = True, e
     except Exception as e:
         alert(f"{e}")
 
-    if res.returncode == 0 and res.stderr == '':
+    if res.returncode == 0 and ((res.stderr == '') or ('ok' in res.stderr)):
         return res
 
     else:

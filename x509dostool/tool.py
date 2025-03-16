@@ -499,8 +499,6 @@ def main():
             if dirs != '':
                 os.makedirs(dirs, exist_ok = True)
 
-        prompt("editing...")
-
         if args.edit_command is None:
             cert = read_cert(args.input)
 
@@ -616,11 +614,11 @@ def main():
                         ]
                         pub_key = args.P
 
-                        #if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
-                        #    if not any([args.balanced, args.compressed]):
-                        #        print("usage: edit tbs spki ecdsa_fp [-h] [-algo] [-p] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed]")
-                        #        print("edit tbs spki ecdsa_fp: error: one of the following arguments are required: -algo, -p, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed")
-                        #        sys.exit(1)                        
+                        if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
+                            if not any([args.balanced, args.compressed]):
+                                print("usage: edit tbs spki ecdsa_fp [-h] [-algo] [-p] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed]")
+                                print("edit tbs spki ecdsa_fp: error: one of the following arguments are required: -algo, -p, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed")
+                                sys.exit(1)                        
 
                         edit_spki(
                                     cert, "ecdsa_fp", args.pub_algo_oid, 
