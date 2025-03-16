@@ -10,17 +10,17 @@ test_edit_commands=(
     "x509dostool edit -in test.crt -out edited_test.crt tbs issuer -types 1.2.1023 1.2.65535 -values test1 test2"
     "x509dostool edit -in test.crt -out edited_test.crt tbs subject -types 1.2.1023 1.2.65535 -values test1 test2"
     "x509dostool generate -out test.crt test0 -algo rsa"
-    "x509dostool edit -in test.crt -out edited_test.crt tbs spki rsa -algo 1.2.1023 -n 1023 -e 1023 --pubout"
+    "x509dostool edit -in test.crt -out edited_test.crt tbs spki rsa -algo 1.2.1023 -n 1023 -e 1023"
     "x509dostool generate -out test.crt test0 -algo dsa"
-    "x509dostool edit -in test.crt -out edited_test.crt tbs spki dsa -algo 1.2.1023 -p 1023 -q 1023 -g 1023 -pub 2**20-1 --pubout"
+    "x509dostool edit -in test.crt -out edited_test.crt tbs spki dsa -algo 1.2.1023 -p 1023 -q 1023 -g 1023 -pub 2**20-1"
     "x509dostool generate -out test.crt test0 -algo ecdsa"
-    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa -algo 1.2.1023 -name secp256k1 -P 040102030405060708090A --compressed --pubout"
+    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa -algo 1.2.1023 -name secp256k1 -P 040102030405060708090A --compressed"
     "x509dostool generate -out test.crt test0 -algo ecdsa --explicit"
-    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa_fp -algo 1.2.1023 -p 1023 -a 1023 -b 1023 -G 040102030405060708090A -order 1023 -cofactor 1023 -seed 2**50-1 -P 040102030405060708090A --balanced --compressed --pubout"
+    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa_fp -algo 1.2.1023 -p 1023 -a 1023 -b 1023 -G 040102030405060708090A -order 1023 -cofactor 1023 -seed 2**50-1 -P 040102030405060708090A --balanced --compressed"
     "x509dostool generate -out test.crt test0 -algo ecdsa -name sect233r1 --explicit"
-    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa_f2m_tp -algo 1.2.1023 -m 1023 -t 1023 -a 1023 -b 1023 -G 040102030405060708090A -order 1023 -cofactor 1023 -seed 2**50-1 -P 040102030405060708090A --balanced --compressed --pubout"
+    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa_f2m_tp -algo 1.2.1023 -m 1023 -t 1023 -a 1023 -b 1023 -G 040102030405060708090A -order 1023 -cofactor 1023 -seed 2**50-1 -P 040102030405060708090A --balanced --compressed"
     "x509dostool generate -out test.crt test0 -algo ecdsa -name sect283r1 --explicit"
-    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa_f2m_pp -algo 1.2.1023 -m 1023 -t3 1023 -t2 1023 -t1 1023 -a 1023 -b 1023 -G 040102030405060708090A -order 1023 -cofactor 1023 -seed 2**50-1 -P 040102030405060708090A --balanced --compressed --pubout"
+    "x509dostool edit -in test.crt -out edited_test.crt tbs spki ecdsa_f2m_pp -algo 1.2.1023 -m 1023 -t3 1023 -t2 1023 -t1 1023 -a 1023 -b 1023 -G 040102030405060708090A -order 1023 -cofactor 1023 -seed 2**50-1 -P 040102030405060708090A --balanced --compressed"
 )
 
 # check if x509dostool is installed
