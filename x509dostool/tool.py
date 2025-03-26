@@ -636,7 +636,7 @@ def main():
 
                         if all(arg is None for arg in [args.pub_algo_oid] + parameters + [pub_key]):
 
-                            if not any([args.balanced, args.compressed]): 
+                            if not any([args.balanced, args.compressed]):
                                 print("usage: edit tbs spki ecdsa_f2m_tp [-h] [-algo] [-m] [-t] [-a] [-b] [-G] [-order] [-cofactor] [-seed] [-P] [--balanced] [--compressed]")
                                 print("edit tbs spki ecdsa_f2m_tp: error: one of the following arguments are required: -algo, -m, -t, -a, -b, -G, -order, -cofactor, -seed, -P, --balanced, --compressed")
                                 sys.exit(1)  

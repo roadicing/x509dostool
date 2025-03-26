@@ -19,7 +19,7 @@ setup(
             "x509dostool=x509dostool.tool:main",
         ],
     },
-    python_requires=">=3.10",
+    python_requires=">=3.8",
     include_package_data=True,
     package_data={
         "x509dostool": ["config.json"]

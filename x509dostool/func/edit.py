@@ -182,15 +182,18 @@ def set_ecdsa_public_key_explicitly(spki, type = "fp", P_hex = None, p = None, d
     else:
         a_hex = params['curve']['a'].asOctets().hex()
 
-    params['curve']['a'] = OctetString(bytes.fromhex(a_hex))
+    #params['curve']['a'] = OctetString(bytes.fromhex(a_hex))
+    bytes_a = bytes_padding(bytes.fromhex(a_hex), padding_len)
+    params['curve']['a'] = OctetString(bytes_a)
 
     if b is not None:
         b_hex = expr_to_hex(b)
     else:
         b_hex = params['curve']['b'].asOctets().hex()
 
-    params['curve']['b'] = OctetString(bytes.fromhex(b_hex))
-
+    #params['curve']['b'] = OctetString(bytes.fromhex(b_hex))
+    bytes_b = bytes_padding(bytes.fromhex(b_hex), padding_len)
+    params['curve']['b'] = OctetString(bytes_b)
 
     if G_hex is not None:
         if not is_hex_string(G_hex):

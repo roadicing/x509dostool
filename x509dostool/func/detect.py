@@ -11,7 +11,8 @@ def monitor_cpu(ps_process, cpu_rounds, cpu_threshold, result):
     for _ in range(cpu_rounds):
         try:
             cpu_usage = ps_process.cpu_percent(interval=1)
-        except:
+        except Exception as e:
+            print(f"{e}")
             break
 
         cpu_usage_sum += cpu_usage
@@ -43,7 +44,7 @@ def monitor_process(process, cpu_rounds, mem_rounds, cpu_threshold, mem_threshol
     issue_num = 0
 
     try:
-        time.sleep(2)
+        time.sleep(4)
 
         pid = int(subprocess.check_output(["pgrep", "-P", str(process.pid)]).decode().strip())
         ps_process = psutil.Process(pid)
@@ -118,7 +119,6 @@ def run_detect(script_path, cert_path, cpu_rounds, mem_rounds, cpu_threshold, me
     prompt("detecting...")
 
     process = exec_shell_script_with_cert(script_path, cert_path)
-
     issue_num = monitor_process(process, cpu_rounds, mem_rounds, cpu_threshold, mem_threshold)
 
     process.kill()

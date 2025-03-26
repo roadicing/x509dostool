@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "checking the installation status of the library..."
+echo $(printf '%0.s-' {1..80})
 
 # initialize an empty list to store the found libraries
 installed_libraries=()
@@ -29,7 +30,7 @@ bc_jar_path=$(find / -type f -name "bcprov*.jar" 2>/dev/null | head -n 1)
 if [[ -n "$bc_jar_path" && -f "$bc_jar_path" ]]; then
     bc_version=$(unzip -p "$bc_jar_path" META-INF/MANIFEST.MF 2>/dev/null | grep -i "Implementation-Version" | cut -d' ' -f2)
     echo "found bouncy castle installed: $bc_version"
-    installed_libraries+=("bouncy_castle")
+    installed_libraries+=("bouncycastle")
 else
     echo "bouncy castle is not installed." >&2
 fi
@@ -55,19 +56,16 @@ else
 fi
 
 # check if crypto++ is installed
-cryptopp_header=$(find / -type f -path "*/cryptopp*/cryptlib.h" 2>/dev/null | head -n 1)
-
-if [[ -n "$cryptopp_header" ]]; then
-    version=$(echo "$cryptopp_header" | sed -E 's|.*/cryptopp([0-9]+)/cryptlib.h|\1|')
+if dpkg -s libcrypto++-dev &>/dev/null; then
+    version=$(dpkg -s libcrypto++-dev | grep '^Version:' | awk '{print $2}')
     echo "found crypto++ installed: $version"
-    installed_libraries+=("crypto++")
-    cryptopp_path=$(dirname "$cryptopp_header")
+    installed_libraries+=("cryptopp")
 else
     echo "crypto++ is not installed." >&2
 fi
 
 # output the list of installed libraries
-echo "installed libraries: ${installed_libraries[@]}"
+echo -e "\e[32minstalled libraries:\e[0m ${installed_libraries[@]}"
 printf '%.0s-' {1..80} && echo
 
 # check if x509dostool is installed

@@ -1,14 +1,18 @@
 #!/bin/bash
 
 # check if crypto++ is installed
-CRYPTOPP_HEADER=$(find / -type f -path "*/cryptopp*/cryptlib.h" 2>/dev/null | head -n 1)
-
-if [[ -z "$CRYPTOPP_HEADER" ]]; then
-    echo "error: crypto++ is not installed." >&2
+if dpkg -s libcrypto++-dev &>/dev/null; then
+    version=$(dpkg -s libcrypto++-dev | grep '^Version:' | awk '{print $2}')
+    echo "found crypto++ installed: $version"
+    installed_libraries+=("cryptopp")
+else
+    echo "crypto++ is not installed." >&2
     exit 1
 fi
 
 TEMP_DIR="$(dirname "$0")/tmp"
+
+echo $TEMP_DIR
 
 if [ ! -d "$TEMP_DIR" ]; then
     mkdir -p "$TEMP_DIR"
@@ -23,6 +27,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 CERT_FILE="$1"
+EDITED_CERT_FILE="test.crt"
 
 # ensure the provided certificate is in PEM format
 if ! grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || ! grep -q "END CERTIFICATE" "$CERT_FILE"; then
@@ -30,14 +35,14 @@ if ! grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || ! grep -q "END CERTIFICATE" "$C
     exit 1
 fi
 
-# Run the x509dostool commands and determine the type
+# run the x509dostool commands and determine the type
 TYPE=""
 
-if x509dostool edit -in "$CERT_FILE" -outform der tbs spki ecdsa_fp --pubout &>/dev/null; then
+if x509dostool edit -in "$CERT_FILE" -outform der -out "$TEMP_DIR/$EDITED_CERT_FILE" --pubout tbs spki ecdsa_fp -order 1 &>/dev/null; then
     TYPE="ecdsa_fp"
-elif x509dostool edit -in "$CERT_FILE" -outform der tbs spki ecdsa_f2m_tp --pubout &>/dev/null; then
+elif x509dostool edit -in "$CERT_FILE" -outform der -out "$TEMP_DIR/$EDITED_CERT_FILE" --pubout tbs spki ecdsa_f2m_tp -order 1  &>/dev/null; then
     TYPE="ecdsa_f2m_tp"
-elif x509dostool edit -in "$CERT_FILE" -outform der tbs spki ecdsa_f2m_pp --pubout &>/dev/null; then
+elif x509dostool edit -in "$CERT_FILE" -outform der -out "$TEMP_DIR/$EDITED_CERT_FILE" --pubout tbs spki ecdsa_f2m_pp -order 1  &>/dev/null; then
     TYPE="ecdsa_f2m_pp"
 else
     echo "error: currently not supported" >&2
@@ -45,11 +50,18 @@ else
 fi
 
 echo $TYPE
+#echo "$TEMP_DIR/$EDITED_CERT_FILE"
 
-# Create PUBKEY_FILE by changing the extension to .pubKey
-PUBKEY_FILE="$(realpath "${CERT_FILE%.*}.pub")"
+# create PUBKEY_FILE by changing the extension to .pubKey
+#PUBKEY_FILE="$(realpath "$TEMP_DIR/${EDITED_CERT_FILE%.*}.pub")"
 
-# Write corresponding code to TEMP_FILE
+# PUBKEY_FILE="${EDITED_CERT_FILE%.*}.pub"
+CERT_PATH=$(realpath "$EDITED_CERT_FILE")
+PUBKEY_FILE="$TEMP_DIR/$(basename "${CERT_PATH%.*}.pub")"
+#PUBKEY_FILE="${CERT_PATH%.*}.pub" 
+echo $PUBKEY_FILE
+
+# write corresponding code to TEMP_FILE
 case "$TYPE" in
     "ecdsa_fp")
         cat <<EOL > "$TEMP_FILE"
@@ -99,10 +111,10 @@ EOL
         ;;
 esac
 
-# Compile the C++ code
+# compile the C++ code
 g++ -o "$TEMP_DIR/Main" "$TEMP_FILE" -lcrypto++
 if [ $? -eq 0 ]; then
-    # Run the compiled executable
+    # run the compiled executable
     "$TEMP_DIR/Main"
 else
     echo "error: compilation failed." >&2
