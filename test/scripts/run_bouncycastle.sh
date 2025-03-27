@@ -28,7 +28,7 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-CERT_FILE=$(realpath "$1")
+CERT_FILE=$1
 
 # ensure the provided certificate is in PEM format
 if ! grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || ! grep -q "END CERTIFICATE" "$CERT_FILE"; then

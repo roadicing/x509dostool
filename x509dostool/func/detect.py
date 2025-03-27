@@ -12,7 +12,6 @@ def monitor_cpu(ps_process, cpu_rounds, cpu_threshold, result):
         try:
             cpu_usage = ps_process.cpu_percent(interval=1)
         except Exception as e:
-            print(f"{e}")
             break
 
         cpu_usage_sum += cpu_usage
@@ -96,10 +95,16 @@ def monitor_process(process, cpu_rounds, mem_rounds, cpu_threshold, mem_threshol
 
         else:
             if (b"segmentation fault" in err.lower()) or (b"aborted" in err.lower()):
-                prompt("no cpu exhaustion detected.", color_func = green)
-                prompt("no memory exhaustion detected.", color_func = green)
-                prompt("crash detected!", color_func = red)
-                issue_num += 1
+                # skip the errors of crypto++
+                if b"berdecodeerr" not in err.lower():
+                    prompt("no cpu exhaustion detected.", color_func = green)
+                    prompt("no memory exhaustion detected.", color_func = green)
+                    prompt("crash detected!", color_func = red)
+                    issue_num += 1
+                
+                else:
+                    prompt("script error found (or potential mitigation strategy from the library), manual confirmation required.")
+                    prompt(f"error info: {err}")
 
             else:
                 prompt("script error found (or potential mitigation strategy from the library), manual confirmation required.")
@@ -130,7 +135,7 @@ def handle_detects(script_path, cert_path, cpu_rounds, mem_rounds, cpu_threshold
     cert_paths = get_all_filenames(cert_path)
 
     test_num = 0
-    issue_num = 0
+    postive_test_num = 0
     for cnt, script_path in enumerate(script_paths):
         make_divider("=", 80)
         prompt(f"currently detected library: [{script_path}]")
@@ -140,14 +145,14 @@ def handle_detects(script_path, cert_path, cpu_rounds, mem_rounds, cpu_threshold
             
             prompt(f"currently used certificate: [{cert_path}]")
             test_num += 1
-            issue_num += run_detect(script_path, cert_path, cpu_rounds, mem_rounds, cpu_threshold, mem_threshold)
+            postive_test_num += (run_detect(script_path, cert_path, cpu_rounds, mem_rounds, cpu_threshold, mem_threshold) > 0)
         
         make_divider("-", 80)
         prompt(f"the detection for [{script_path}] is complete.")
 
-        make_divider("=", 80)
+        # make_divider("=", 80)
         
         if cnt != len(script_paths) - 1:
             print("")
     
-    prompt(f"results: performed {test_num} tests, and {issue_num} issues were found.")
+    prompt(f"results: performed {test_num} tests, and issues were detected in {postive_test_num} of them.")

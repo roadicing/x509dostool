@@ -25,14 +25,19 @@ else
 fi
 
 # check if bouncy castle is installed
-bc_jar_path=$(find / -type f -name "bcprov*.jar" 2>/dev/null | head -n 1)
+bcprov_jar_path=$(find / -type f -name "bcprov*.jar" 2>/dev/null | head -n 1)
+bcpkix_jar_path=$(find / -type f -name "bcpkix*.jar" 2>/dev/null | head -n 1)
 
-if [[ -n "$bc_jar_path" && -f "$bc_jar_path" ]]; then
-    bc_version=$(unzip -p "$bc_jar_path" META-INF/MANIFEST.MF 2>/dev/null | grep -i "Implementation-Version" | cut -d' ' -f2)
-    echo "found bouncy castle installed: $bc_version"
-    installed_libraries+=("bouncycastle")
+if [[ -n "$bcprov_jar_path" && -f "$bcprov_jar_path" ]]; then
+    bc_version=$(unzip -p "$bcprov_jar_path" META-INF/MANIFEST.MF 2>/dev/null | grep -i "Implementation-Version" | cut -d' ' -f2)
+    if [[ -n "$bcpkix_jar_path" && -f "$bcpkix_jar_path" ]]; then
+        echo "found bouncy castle installed: $bc_version"
+        installed_libraries+=("bouncycastle")
+    else
+        echo "bouncy castle (prov) is not installed." >&2
+    fi
 else
-    echo "bouncy castle is not installed." >&2
+    echo "bouncy castle (pkix) is not installed." >&2
 fi
 
 # check if gnutls is installed
@@ -65,8 +70,8 @@ else
 fi
 
 # output the list of installed libraries
-echo -e "\e[32minstalled libraries:\e[0m ${installed_libraries[@]}"
 printf '%.0s-' {1..80} && echo
+echo -e "\e[32minstalled libraries:\e[0m ${installed_libraries[@]}"
 
 # check if x509dostool is installed
 if ! command -v x509dostool &>/dev/null; then
@@ -77,11 +82,14 @@ fi
 # execute x509dostool detect for each installed library using the crafted certificates
 trap 'echo "exiting..."; exit 0' SIGINT
 
+cert_path="$(dirname "$0")/certs"
+
 for x in "${installed_libraries[@]}"; do
-    script_path="scripts/run_${x}.sh"
+    script_path="$(dirname "$0")/scripts/run_${x}.sh"
+    printf '%.0s-' {1..80} && echo
     if [[ -f "$script_path" ]]; then
-        echo "executing: x509dostool detect -libs $script_path -certs certs/"
-        x509dostool detect -libs "$script_path" -certs certs/
+        echo "executing: x509dostool detect -libs $script_path -certs $cert_path"
+        x509dostool detect -libs "$script_path" -certs $cert_path
     else
         echo "script not found for library: $script_path"
     fi
