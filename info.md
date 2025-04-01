@@ -9,21 +9,21 @@ The information regarding the 18 vulnerabilities we recently discovered is as fo
 |---------|-----------------------|---------------|---------------|---------------------|
 | 1       | Botan                 | _Risk-4_      | v3.2.0        | CVE-2024-34703      |
 | 2       | Botan                 | _Risk-5_      | v3.4.0        | CVE-2024-34702      |
-| 3       | Botan                 | _Risk-8_      | v3.4.0        |                     |
+| 3       | Botan                 | _Risk-8_      | v3.4.0        | CVE-2024-34702      |
 | 4       | Bouncy Castle         | _Risk-1_      | v1.77         | CVE-2024-29857      |
 | 5       | Bouncy Castle         | _Risk-7_      | v1.77         | CVE assigning       |
 | 6       | Bouncy Castle         | _Risk-8_      | v1.77         | CVE assigning       |
-| 7       | Crypto++              | _Risk-1_      | v8.9          | Fixing              |
+| 7       | Crypto++              | _Risk-1_      | v8.9          |                     |
 | 8       | Crypto++              | _Risk-2_      | v8.9          | CVE-2023-50980      |
 | 9       | Crypto++              | _Risk-3_      | v8.9          | CVE-2023-50981      |
-| 10      | GnuTLS                | _Risk-5_      | v3.7.11       | CVE assigning       |
+| 10      | GnuTLS                | _Risk-5_      | v3.7.11       | CVE-2024-12133, CVE-2024-12243 |
 | 11      | GnuTLS                | _Risk-8_      | v3.7.11       | CVE assigning       |
 | 12      | phpseclib             | _Risk-1_      | v3.0.33       | CVE-2023-49316      |
 | 13      | phpseclib             | _Risk-3_      | v3.0.18       | CVE-2023-27560      |
 | 14      | phpseclib             | _Risk-4_      | v3.0.35       | CVE-2024-27354      |
 | 15      | phpseclib             | _Risk-7_      | v3.0.35       | CVE-2024-27355      |
-| 16      | Security (Apple)      | _Risk-5_      | v14.6.1       | Fixing              |
-| 17      | Security (Apple)      | _Risk-7_      | v14.6.1       | Fixing              |
+| 16      | Security (Apple)      | _Risk-5_      | v14.6.1       |                     |
+| 17      | Security (Apple)      | _Risk-7_      | v14.6.1       |                     |
 | 18      | Security (Apple)      | _Risk-8_      | v14.6.1       | CVE-2024-54538      |
 
 The information regarding the 12 previously known vulnerabilities identified is as follows (Table 4 in Appendix B):

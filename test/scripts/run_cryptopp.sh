@@ -40,13 +40,15 @@ fi
 # run the x509dostool commands and determine the type
 TYPE=""
 
-if x509dostool edit -in "$CERT_FILE" -outform der -out "$EDITED_CERT_FILE" --pubout tbs spki ecdsa_fp -order 1 &>/dev/null; then
+if timeout 1s x509dostool edit -in "$CERT_FILE" -outform der -out "$EDITED_CERT_FILE" --pubout tbs spki ecdsa_fp -order 1 &>/dev/null; then
     TYPE="ecdsa_fp"
-elif x509dostool edit -in "$CERT_FILE" -outform der -out "$EDITED_CERT_FILE" --pubout tbs spki ecdsa_f2m_tp -order 1  &>/dev/null; then
+elif timeout 1s x509dostool edit -in "$CERT_FILE" -outform der -out "$EDITED_CERT_FILE" --pubout tbs spki ecdsa_f2m_tp -order 1  &>/dev/null; then
     TYPE="ecdsa_f2m_tp"
-elif x509dostool edit -in "$CERT_FILE" -outform der -out "$EDITED_CERT_FILE" --pubout tbs spki ecdsa_f2m_pp -order 1  &>/dev/null; then
+elif timeout 1s x509dostool edit -in "$CERT_FILE" -outform der -out "$EDITED_CERT_FILE" --pubout tbs spki ecdsa_f2m_pp -order 1  &>/dev/null; then
     TYPE="ecdsa_f2m_pp"
-else
+fi
+
+if [ -z "$TYPE" ]; then
     echo "error: to facilitate testing for crypto++, only ecdsa public keys with explicitly included curve parameters are supported currently." >&2
     exit 1
 fi

@@ -110,7 +110,7 @@ Use the certificate to detect implementation issues in a library executed throug
 x509dostool detect -libs test.sh -certs crafted_certificate.crt 
 ```
 
-Additionally, some typical commands are provided in the `test/test_generate.sh` and `test/test_edit.sh` files for reference.
+Additionally, some typical commands are provided in the `test/test_*.sh` files for reference.
 
 We also provided a video for demonstrating the usage of the tool, which can be found on [our website](https://sites.google.com/view/x509dos).
 
