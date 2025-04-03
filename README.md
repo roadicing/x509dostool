@@ -6,19 +6,17 @@
 
 Some primary components include:
 
-- `x509dostool` dictionary (source code):
-  - `tool.py`: contains the implementation of the tool's main function.
-  - `func/`: includes the implementations of the three commands: `generate`, `edit`, and `detect`.
-  - `misc/`: contains auxiliary functions frequently utilized by the aforementioned commands.
+- `x509dostool/` (source code):
+  - `tool.py`: contains the main implementation of the tool.
+  - `func/`: includes the implementation of three commands: `generate`, `edit`, and `detect`.
+  - `misc/`: contains auxiliary functions frequently used by these commands.
   - `ext_pyasn1_modules/`: includes the implementation of the extended pyasn1-modules template.
   - `config.json`: serves as the configuration file for the tool.
-- `test` dictionary (evaluation):
-  - `test_generate.sh`: tests the `generate` command.
-  - `test_edit.sh`: tests the `edit` command.
-  - `test_detect.sh`: tests the `detect` command, utilizing files from the `certs/` directory and the `scripts/` directory.
-  - `certs/`: contains some pre-crafted certificates created using the `generate` and `edit` commands.
-  - `scripts/`: contains some shell scripts used to run the relevant APIs for the libraries under examination.
-- `setup.py`: a file used for installing the tool.
+- `test/` (evaluation):
+  - `generate/`: contains the script for testing the `generate` command.
+  - `edit/`: contains the script for testing the `edit` command (it will generate a directory named `certs/` containing certificates to be used upon first execution).
+  - `detect/`: contains the script for testing the `detect` command (it will generate a directory named `certs/` containing certificates to be used upon first execution) and a directory named `scripts`, which includes some scripts used to run the relevant APIs for the libraries under examination.
+- `setup.py`: a file used to install the tool.
 
 # Dependencies
 
@@ -116,6 +114,8 @@ We also provided a video for demonstrating the usage of the tool, which can be f
 
 ## Evaluation
 
-To perform the evaluation for the `generate` and `edit` command, enter the `test/` directory and run `./test_generate.sh [--verbose]` and `./test_edit.sh [--verbose]`.
+To perform the evaluation for the `generate` command, enter the `test/generate` directory and run `./test_generate.sh [--verbose]`.
 
-To perform the evaluation for the `detect` command, enter the `test/` directory and run `./test_detect.sh`.
+To perform the evaluation for the `edit` command, enter the `test/edit` directory and run `./test_edit.sh [--verbose]`.
+
+To perform the evaluation for the `detect` command, enter the `test/detect` directory and run `./test_detect.sh`.

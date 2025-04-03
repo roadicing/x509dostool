@@ -228,10 +228,10 @@ def gen_test2(m, t, balanced, compressed, out_path, out_form, tmp_dir):
     spki = cert['tbsCertificate']['subjectPublicKeyInfo']
 
     if m is None:
-        m = random.randint(112, 384)
+        m = random.randint(2, 233)
     
     if t is None:
-        t = random.randint(385, 571)
+        t = 233
     
     set_ecdsa_public_key_explicitly(
                                     spki, type = "f2m_tp", 
@@ -241,6 +241,39 @@ def gen_test2(m, t, balanced, compressed, out_path, out_form, tmp_dir):
     write_cert(cert, out_path, pem = (out_form == "pem"))
 
 def gen_test3(p, balanced, out_path, out_form, tmp_dir, a = None, b = None, G = None):
+    def kronecker(x, y):
+        if y == 0:
+            return 0 if abs(x) != 1 else 1
+        if y < 0:
+            if x < 0:
+                sign = -1
+            else:
+                sign = 1
+            y = -y
+        else:
+            sign = 1
+        if y % 2 == 0:
+            t = (y & -y).bit_length() - 1
+            if x % 2 == 0:
+                return 0
+            elif t % 2 == 1 and (x % 8 == 3 or x % 8 == 5):
+                sign = -sign
+            y >>= t
+        j = 1
+        while y != 0:
+            x, y = y, x % y
+            if y == 0:
+                break
+            t = (y & -y).bit_length() - 1
+            if t % 2 == 1 and (x % 8 == 3 or x % 8 == 5):
+                j = -j
+            y >>= t
+            if y % 4 != 1 and x % 4 != 1:
+                j = -j
+        if x != 1:
+            j = 0
+        return sign * j
+
     # https://neuromancer.sk/std/x962/prime256v1
     fast_gen_normal_cert(type = "ecdsa", curve_name = "prime256v1", explicit = True, tmp_dir = tmp_dir)
 
@@ -253,12 +286,33 @@ def gen_test3(p, balanced, out_path, out_form, tmp_dir, a = None, b = None, G = 
             Gx = random.randint(2, 2**10)
             a = random.randint(2, 2**10)
             p = Gx**3 + a * Gx + b + 1
+
             if p % 8 == 1:
                 q = p - 1
+                e = 0
                 while q % 2 == 0:
                     q //= 2
+                    e += 1
+
                 if pow(Gx**3 + a * Gx + b, q, p) == p - 1:
-                    break
+                    found_zero = False
+                    found_negative_one = False
+
+                    # https://github.com/openssl/openssl/blob/OpenSSL_1_0_2-stable/crypto/bn/bn_sqrt.c#L228
+                    for y in range(2, 22):
+                        k = kronecker(y, p)
+                        if k == 0:
+                            found_zero = True
+                            break
+                        elif k == -1:
+                            found_negative_one = True
+                            break
+                        
+                    if found_zero or not found_negative_one:
+                        continue
+
+                    if pow(y, q * 2**(e - 1), p) != p - 1:
+                        break
         
         G = '03' + long_to_bytes(Gx).hex()
 
@@ -270,9 +324,9 @@ def gen_test3(p, balanced, out_path, out_form, tmp_dir, a = None, b = None, G = 
     )
     write_cert(cert, out_path, pem = (out_form == "pem"))
 
-def gen_test4(p, balanced, compressed, out_path, out_form, tmp_dir):
+def gen_test4(p, type, balanced, compressed, out_path, out_form, tmp_dir):
     # https://neuromancer.sk/std/x962/prime256v1
-    fast_gen_normal_cert(type = "ecdsa", curve_name = "prime256v1", explicit = True, tmp_dir = tmp_dir)
+    fast_gen_normal_cert(type = type, curve_name = "prime256v1", explicit = True, tmp_dir = tmp_dir)
 
     cert = read_cert(f"{tmp_dir}{DEFAULT_CERT_NAME}")
     spki = cert['tbsCertificate']['subjectPublicKeyInfo']
@@ -282,10 +336,16 @@ def gen_test4(p, balanced, compressed, out_path, out_form, tmp_dir):
         exps = [21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269]
         p = f"2 ** {random.choice(exps)} - 1"
 
-    set_ecdsa_public_key_explicitly(spki, type = "fp", 
-                                    p = p,
-                                    balanced = balanced, compressed = compressed
-    )
+    if type == "rsa":
+        set_rsa_public_key(spki, n = p)
+    elif type == "dsa":
+        set_dsa_public_key(spki, p = p)
+    elif type == "ecdsa":
+        set_ecdsa_public_key_explicitly(spki, type = "fp", 
+                                        p = p,
+                                        balanced = balanced, compressed = compressed
+        )
+    
     write_cert(cert, out_path, pem = (out_form == "pem"))
 
 def gen_test5(num_emails, num_alt_names, num_name_constraints, num_policies, out_path, out_form, tmp_dir):
@@ -409,7 +469,7 @@ def gen_test10(num_certs, repeat, out_path, out_form, tmp_dir):
     )
 
     if repeat is None:
-        repeat = 2
+        repeat = 1
     
     repeat = expr_to_int(repeat)
 

@@ -67,8 +67,8 @@ def main():
 
     # ================================ BEGIN test2 ================================
     generate_test2 = generate_subparser.add_parser("test2", help = "a cert explicitly containing a reduction polynomial f(x) = x^m + x^t + 1, with m < t")
-    generate_test2.add_argument('-m', type = str, help = 'specify the degree m (default = randint(112, 384))', metavar = "", required = False)
-    generate_test2.add_argument('-t', type = str, help = 'specify the exponent t (default = randint(385, 571))', metavar = "", required = False)
+    generate_test2.add_argument('-m', type = str, help = 'specify the degree m (default = randint(2, 233))', metavar = "", required = False)
+    generate_test2.add_argument('-t', type = str, help = 'specify the exponent t (default = 233)', metavar = "", required = False)
 
     generate_test2_add_group = generate_test2.add_argument_group(title = "additional features")
     generate_test2_add_group.add_argument('--balanced', action = 'store_true', help = 'add leading zero bytes', required = False)
@@ -99,7 +99,8 @@ def main():
     generate_test4 = generate_subparser.add_parser("test4", help = "a cert explicitly containing a curve over F_p, where p is very large")
     generate_test4.add_argument('-p', type = str, help = 'specify the prime p (default = choice(the 25th to 35th Mersenne primes))', metavar = "", required = False)
     
-    generate_test4_add_group = generate_test4.add_argument_group(title = "additional features")
+    generate_test4_add_group = generate_test4.add_argument_group(title = "additional features (only worked for `-algo ecdsa`)")
+    generate_test4.add_argument('-algo', type = str, help = 'specify the public key algorithm: {rsa, dsa, ecdsa} (default = ecdsa)', choices = ['rsa', 'dsa', 'ecdsa'], metavar = "", required = False, default = 'ecdsa')
     generate_test4_add_group.add_argument('--balanced', action = 'store_true', help = 'add leading zero bytes', required = False)
     generate_test4_add_group.add_argument('--compressed', action = 'store_true', help = 'enable point compression', required = False)
 
@@ -423,6 +424,7 @@ def main():
             elif args.generate_command == 'test4':
                 gen_test4(
                         p = args.p, 
+                        type = args.algo, 
                         balanced = args.balanced, compressed = args.compressed, 
                         out_path = args.out, out_form = args.outform,
                         tmp_dir = TMP_DIR

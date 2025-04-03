@@ -35,7 +35,7 @@ def monitor_memory(ps_process, mem_rounds, mem_threshold, result):
 
         time.sleep(1)
     
-    if len(mem_usage_list) > 1:
+    if len(mem_usage_list) > 2:
         mem_usage_inc_percent = ((mem_usage_list[-1] - mem_usage_list[1]) / mem_usage_list[1])
         result["memory"] = mem_usage_inc_percent >= mem_threshold
 
