@@ -20,7 +20,7 @@ def main():
     if TMP_DIR_RANDOM_FLAG:
         TMP_DIR += os.urandom(5).hex() + '/'
 
-    parser = argparse.ArgumentParser(description = "Test Tool (v1.0.1)", usage = argparse.SUPPRESS)
+    parser = argparse.ArgumentParser(description = "Test Tool (v1.0.2)", usage = argparse.SUPPRESS)
     subparser = parser.add_subparsers(dest = 'command', required = True)
 
     # main

@@ -14,8 +14,8 @@ Some primary components include:
   - `config.json`: serves as the configuration file for the tool.
 - `test/` (evaluation):
   - `generate/`: contains the script for testing the `generate` command.
-  - `edit/`: contains the script for testing the `edit` command (it will generate a directory named `certs/` containing certificates to be used upon first execution).
-  - `detect/`: contains the script for testing the `detect` command (it will generate a directory named `certs/` containing certificates to be used upon first execution) and a directory named `scripts`, which includes some scripts used to run the relevant APIs for the libraries under examination.
+  - `edit/`: contains the script for testing the `edit` command (upon first execution, it will create a directory named `certs/`, which contains the certificates to be used).
+  - `detect/`: contains the script for testing the `detect` command (upon first execution, it will create a directory named `certs/`, which contains the certificates to be used) and a directory named `scripts/`, which includes some scripts used to run the relevant APIs for the libraries under examination.
 - `setup.py`: a file used to install the tool.
 
 # Dependencies
@@ -62,7 +62,7 @@ __  _| ___| / _ \ / _ \|  _ \  ___/ ___|_   _|__   ___ | |
 \ \/ /___ \| | | | (_) | | | |/ _ \___ \ | |/ _ \ / _ \| |
  >  < ___) | |_| |\__, | |_| | (_) |__) || | (_) | (_) | |
 /_/\_\____/ \___/   /_/|____/ \___/____/ |_|\___/ \___/|_|
-Test Tool (v1.0.1)
+Test Tool (v1.0.2)
 
 positional arguments:
   {generate,edit,detect}
@@ -78,13 +78,13 @@ options:
 
 Run `x509dostool {generate, edit, detect} [-h]` to view the detailed meanings of each parameter. Some command examples for the tool are provided below:
 
-Generate a certificate explicitly containing a reduction polynomial of degree $m$, where $p$ is very large:
+Generate a certificate explicitly containing a crafted curve $E_p(a, b)$, where $p$ is very large:
 
 ```
 x509dostool generate test4
 ```
 
-Generate a certificate explicitly containing a reduction polynomial of degree $m$, where $p = 2^{13466917} - 1$, enabling point compression, and ensuring that the DER-encoded length of the $x$-coordinate of the point equals $\lceil \frac{\log_2{p} + 7}{8} \rceil$:
+Generate a certificate explicitly containing a crafted curve $E_p(a, b)$, where $p = 2^{13466917} - 1$, enabling point compression, and ensuring that the DER encoding length of the public key point's $x$ coordinate, the base point's $x$ coordinate, and the curve parameters $a$ and $b$ are all equal to $\lceil \frac{\log_2{p} + 7}{8} \rceil$:
 
 ```
 x509dostool generate test4 -p 2**13466917-1 --compressed --balanced
@@ -102,20 +102,18 @@ Modify the certificate's issuer to be `x509dos`:
 x509dostool edit -in crafted_certificate.crt tbs issuer -values x509dos
 ```
 
-Use the certificate to detect implementation issues in a library executed through a file named `test.sh`:
+Use the certificate to detect implementation issues in a library executed through a script named `test.sh`:
 
 ```
 x509dostool detect -libs test.sh -certs crafted_certificate.crt 
 ```
 
-Additionally, some typical commands are provided in the `test/test_*.sh` files for reference.
+In addition, the scripts under the `test/` directory also provide some common usage examples for the corresponding commands.
 
 We also provided a video for demonstrating the usage of the tool, which can be found on [our website](https://sites.google.com/view/x509dos).
 
 ## Evaluation
 
-To perform the evaluation for the `generate` command, enter the `test/generate` directory and run `./test_generate.sh [--verbose]`.
+To perform the evaluation for the `generate` or `edit` command, enter the respective directory (`test/generate/` or `test/edit/`) and run the corresponding script (`./test_generate.sh` or `./test_edit.sh`), optionally with the `--verbose` flag.
 
-To perform the evaluation for the `edit` command, enter the `test/edit` directory and run `./test_edit.sh [--verbose]`.
-
-To perform the evaluation for the `detect` command, enter the `test/detect` directory and run `./test_detect.sh`.
+To perform the evaluation for the `detect` command, enter the `test/detect/` directory and run `./test_detect.sh`.
