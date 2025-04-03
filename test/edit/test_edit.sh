@@ -115,8 +115,6 @@ for cmd in "${test_edit_commands[@]}"; do
     rm -f edited_test.crt
 done
 
-#rm -rf $cert_path
-
 # output the final statistics
 echo "-----"
 echo "total commands: $total_count"
