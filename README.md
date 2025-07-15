@@ -1,6 +1,6 @@
 # X.509DoSTool
 
-*X.509DoSTool* is a tool introduced in our USENIX Security '25 paper, *X.509DoS: Exploiting and Detecting Denial-of-Service Vulnerabilities in Cryptographic Libraries using Crafted X.509 Certificates*, developed to facilitate the rapid generation of crafted certificates and the automatic detection of Denial-of-Service (DoS) risks in cryptographic library implementations. This document provides instructions for the installation, usage, and evaluation of the tool.
+*X.509DoSTool* is a tool introduced in our USENIX Security '25 paper, [*X.509DoS: Exploiting and Detecting Denial-of-Service Vulnerabilities in Cryptographic Libraries using Crafted X.509 Certificates*](https://www.usenix.org/conference/usenixsecurity25/presentation/shi-bing), developed to facilitate the rapid generation of crafted certificates and the automatic detection of Denial-of-Service (DoS) risks in cryptographic library implementations. This document provides instructions for the installation, usage, and evaluation of the tool.
 
 # Directory Structure
 
